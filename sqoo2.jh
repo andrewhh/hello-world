@@ -1,0 +1,43 @@
+entity Recommendation {
+	url String required 
+    status RecommendationStatus
+    owner SQOOMember
+}
+
+entity Deliverable {
+    url String required 
+    respondsTo Recommendation
+    reviewDocuments ReviewDocument
+}
+
+entity SQOOMember {
+	name String required unique
+}
+
+enum RecommendationStatus {
+	Audit,
+    Complete,
+    Superceded,
+    Retired
+}
+
+entity ReviewDocument {
+	url String required 
+    deliverables Deliverable
+}
+relationship ManyToOne {
+	Recommendation{owner} to SQOOMember{name}
+    ReviewDocument{deliverables} to Deliverable{url}
+}
+relationship OneToMany {
+   	Deliverable{respondsTo} to Recommendation{url}
+    Deliverable{reviewDocuments} to ReviewDocument{url}
+    ReviewDocument{reviewsDeliverables} to Deliverable{url}
+    SQOOMember{name} to Recommendation{owner} 
+    Deliverable{url} to ReviewDocument{deliverables}
+}
+relationship OneToOne {
+    Recommendation{supercededBy} to Recommendation{url}
+    Recommendation{status} to RecommendationStatus
+}
+
